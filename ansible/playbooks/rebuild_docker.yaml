@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  become: true
+
+
+  vars:
+    docker_img_name: "hello-go"
+    docker_cnt_name: "hello-go-test"
+  
+  tasks:
+    - name: remove any running container
+      community.general.docker_container:
+        name: "{{ docker_cnt_name }}"
+        state: absent
+        container_default_behavior: compatibility 
+
+    - name: remove the hello image
+      community.general.docker_image:
+        name: "{{ docker_img_name }}"
+        state: absent
+
+    - name: rebuild the image
+      community.general.docker_image:
+        build:
+          path: "{{ playbook_dir }}/../../hello-go/"
+          pull: yes
+        name: "{{ docker_img_name }}"
+        source: build
+        
+
+    - name: start the new container
+      community.general.docker_container:
+        name: "{{ docker_cnt_name }}"
+        image: "{{ docker_img_name }}"
+        state: started
+        container_default_behavior: compatibility
+        published_ports:
+          - 8080:8080
+
+        
