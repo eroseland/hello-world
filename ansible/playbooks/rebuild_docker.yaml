@@ -3,9 +3,8 @@
   become: true
 
 
-  vars:
-    docker_img_name: "hello-go"
-    docker_cnt_name: "hello-go-test"
+  vars_file:
+    
   
   tasks:
     - name: remove any running container
